@@ -1,7 +1,7 @@
 import { app, ipcMain } from "electron";
 import { createCapacitorElectronApp } from "@capacitor-community/electron";
 
-const {initDB, createTenant, fetchTenants, updateTenant, removeTenant} = require('./db').api
+const {initDB, createTenant, fetchTenants, updateTenant, removeTenant} = require('./api').api
 
 // Enable contextIsolation for security, the API will be exposed through the preloader script
 // See https://www.electronjs.org/docs/tutorial/context-isolation
