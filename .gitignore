@@ -6,4 +6,8 @@ node_modules
 build
 dist
 
+# the api is a separated repo
 /src/api/
+
+# database
+ioreel.db
