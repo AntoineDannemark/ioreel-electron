@@ -53,7 +53,7 @@ ipcMain.handle('fetch-tenants', async() => {
     return fetchTenants();
 })
 
-ipcMain.handle('update-tenant', async(event, {id, ...rest}) =>{
+ipcMain.handle('update-tenant', async(event, {id, ...rest}) => {
     return updateTenant(id, rest)
 })
 
