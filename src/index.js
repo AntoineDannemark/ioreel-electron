@@ -1,7 +1,8 @@
 import { app, ipcMain } from "electron";
+import log from "electron-log";
 import { createCapacitorElectronApp } from "@capacitor-community/electron";
 
-const {initDB, createTenant, fetchTenants, updateTenant, removeTenant} = require('./api').api
+const { initDB, createTenant, fetchTenants, updateTenant, removeTenant } = require('./api').api
 
 // Enable contextIsolation for security, the API will be exposed through the preloader script
 // See https://www.electronjs.org/docs/tutorial/context-isolation
@@ -22,41 +23,58 @@ const myCapacitorApp = createCapacitorElectronApp(capacitorAppOptions);
 // initialization and is ready to create browser windows.
 // Some Electron APIs can only be used after this event occurs.
 app.on("ready", () => {
+    log.info("App is starting");
     myCapacitorApp.init();
 });
 
 // Quit when all windows are closed.
 app.on("window-all-closed", function () {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
+    // On OS X it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+    log.warn("App is shutting down");
+    if (process.platform !== "darwin") {
+        app.quit();
+    }
 });
 
 app.on("activate", function () {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (myCapacitorApp.getMainWindow().isDestroyed()) myCapacitorApp.init();
+    // On OS X it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (myCapacitorApp.getMainWindow().isDestroyed()) myCapacitorApp.init();
 });
 
 // Define any IPC or other custom functionality below here
-ipcMain.handle("init-db", async function(event, arg) {
+ipcMain.handle("init-db", async function (event, arg) {
     return initDB(arg);
-});     
+});
 
-ipcMain.handle('create-tenant', async(event, tenant) => {
+ipcMain.handle('create-tenant', async (event, tenant) => {
     return createTenant(tenant);
 });
 
-ipcMain.handle('fetch-tenants', async() => {
+ipcMain.handle('fetch-tenants', async () => {
     return fetchTenants();
 })
 
-ipcMain.handle('update-tenant', async(event, {id, ...rest}) => {
+ipcMain.handle('update-tenant', async (event, { id, ...rest }) => {
     return updateTenant(id, rest)
 })
 
-ipcMain.handle('remove-tenant', async(event, id) => {
+ipcMain.handle('remove-tenant', async (event, id) => {
     return removeTenant(id);
+})
+
+ipcMain.handle('log', (event, type, ...aArgs) => {
+    switch (type) {
+        default:
+        case "info":
+            log.info(...aArgs);
+            break;
+        case "warn":
+            log.warn(...aArgs);
+            break;
+        case "error":
+            log.error(...aArgs);
+            break;
+    }
 })

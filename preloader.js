@@ -10,5 +10,6 @@ contextBridge.exposeInMainWorld(
       fetchTenants: () => ipcRenderer.invoke('fetch-tenants'),
       updateTenant: (id, data) => ipcRenderer.invoke('update-tenant', {id, ...data}),
       removeTenant: id => ipcRenderer.invoke('remove-tenant', id),
+      log: (type, ...aArgs) => ipcRenderer.invoke("log", type, ...aArgs),
     }
   )
