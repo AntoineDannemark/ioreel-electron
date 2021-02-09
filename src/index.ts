@@ -1,4 +1,5 @@
 import { app, ipcMain } from "electron";
+import log from "electron-log"; 
 import { createCapacitorElectronApp } from "@capacitor-community/electron";
 
 const {initDB, createTenant, fetchTenants, updateTenant, removeTenant} = require('./api').api
@@ -41,6 +42,22 @@ app.on("activate", function () {
 });
 
 // Define any IPC or other custom functionality below here
+ipcMain.on('log', (event, {type, message}) => { 
+    console.log(message)
+    switch (type) { 
+        default: 
+        case "info": 
+            log.info(message); 
+            break; 
+        case "warn": 
+            log.warn(message); 
+            break; 
+        case "error": 
+            log.error(message); 
+            break; 
+    } 
+})
+
 ipcMain.handle("init-db", async function(event, arg) {
     return initDB(arg);
 });     
