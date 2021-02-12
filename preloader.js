@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld(
     {
         log: ({ type, message }) => ipcRenderer.send("log", { type, message }),
         initDB: platform => ipcRenderer.invoke('init-db', platform),
+        generateApi: () => ipcRenderer.invoke('generate-api'),
         createTenant: tenant => ipcRenderer.invoke('create-tenant', tenant),
         fetchTenants: () => ipcRenderer.invoke('fetch-tenants'),
         updateTenant: (id, data) => ipcRenderer.invoke('update-tenant', { id, ...data }),

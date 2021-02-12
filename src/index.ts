@@ -89,3 +89,5 @@ ipcMain.handle('person/add-phone', async(event, {id, phone}) => {
 ipcMain.handle('person/add-address', async(event, {id, address}) => {
     return api.person.addAddress(id, address);
 })
+
+ipcMain.handle('generate-api', () => api.generateApi())
