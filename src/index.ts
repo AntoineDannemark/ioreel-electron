@@ -42,50 +42,62 @@ app.on("activate", function () {
 });
 
 // Define any IPC or other custom functionality below here
-ipcMain.on('log', (event, {type, message}) => { 
-    console.log(message)
-    switch (type) { 
-        default: 
-        case "info": 
-            log.info(message); 
-            break; 
-        case "warn": 
-            log.warn(message); 
-            break; 
-        case "error": 
-            log.error(message); 
-            break; 
-    } 
-})
+// ipcMain.on('log', (event, {type, message}) => { 
+//     console.log(message)
+//     switch (type) { 
+//         default: 
+//         case "info": 
+//             log.info(message); 
+//             break; 
+//         case "warn": 
+//             log.warn(message); 
+//             break; 
+//         case "error": 
+//             log.error(message); 
+//             break; 
+//     } 
+// })
 
 ipcMain.handle("init-db", async function(event, arg) {
     return api.initDB(arg);
 });     
 
-ipcMain.handle('create-tenant', async(event, tenant) => {
-    return api.createTenant(tenant);
-});
+// ipcMain.handle('create-tenant', async(event, tenant) => {
+//     return api.createTenant(tenant);
+// });
 
-ipcMain.handle('fetch-tenants', async() => {
-    return api.fetchTenants();
+// ipcMain.handle('fetch-tenants', async() => {
+//     return api.fetchTenants();
+// })
+
+// ipcMain.handle('update-tenant', async(event, {id, ...rest}) => {
+//     return api.updateTenant(id, rest)
+// })
+
+// ipcMain.handle('remove-tenant', async(event, id) => {
+//     return api.removeTenant(id);
+// })
+
+// ipcMain.handle('person/find-by-name', async(event, { firstname, lastname }) => {
+//     return api.person.findByName(firstname, lastname)
+// })
+
+ipcMain.handle('person/fetchAll', async() => {
+    return api.person.fetchAll();
 })
 
-ipcMain.handle('update-tenant', async(event, {id, ...rest}) => {
-    return api.updateTenant(id, rest)
+ipcMain.handle('person/create', async(_, person) => {
+    return api.person.create(person);
 })
 
-ipcMain.handle('remove-tenant', async(event, id) => {
-    return api.removeTenant(id);
-})
-
-ipcMain.handle('person/find-by-name', async(event, { firstname, lastname }) => {
-    return api.person.findByName(firstname, lastname)
-})
-
-ipcMain.handle('person/add-phone', async(event, {id, phone}) => {
+ipcMain.handle('person/addPhone', async(event, {id, phone}) => {
     return api.person.addPhone(id, phone);
 })
 
-ipcMain.handle('person/add-address', async(event, {id, address}) => {
-    return api.person.addAddress(id, address);
+ipcMain.handle('phone/create', async(_, phone) => {
+    return api.phone.create(phone)
 })
+
+// ipcMain.handle('person/add-address', async(event, {id, address}) => {
+//     return api.person.addAddress(id, address);
+// })
