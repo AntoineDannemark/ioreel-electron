@@ -5,9 +5,11 @@ const { contextBridge, ipcRenderer } = require('electron')
 contextBridge.exposeInMainWorld(
     'api',
     {        
-        initDB: platform => ipcRenderer.invoke('init-db', platform),
+        utils: {
+            testDBConnection: options => ipcRenderer.invoke('test', options),        
+        },
         person: {
-            create: person => ipcRenderer.invoke('person/create', person),
+            create: (options, person) => ipcRenderer.invoke('person/create', {options, person}),
             fetchAll: () => ipcRenderer.invoke('person/fetchAll'),
             addPhone: (id, phone) => ipcRenderer.invoke('person/addPhone', { id, phone }),
         },
