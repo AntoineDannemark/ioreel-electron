@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld(
     'api',
     {        
         utils: {
+            env: () => ipcRenderer.invoke('env'),
             testDBConnection: options => ipcRenderer.invoke('test', options),        
         },
         person: {
