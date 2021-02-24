@@ -10,4 +10,6 @@ dist
 /src/api/
 
 # database
-ioreel.db
+*.db
+*.db-shm
+*.db-wal
