@@ -1,8 +1,9 @@
 import { app, ipcMain } from "electron";
-import log from "electron-log"; 
+// import log from "electron-log"; 
 import { createCapacitorElectronApp } from "@capacitor-community/electron";
-
 import api from './api';
+
+const isServerless = !!+process.env.IS_SLS
 
 // Enable contextIsolation for security, the API will be exposed through the preloader script
 // See https://www.electronjs.org/docs/tutorial/context-isolation
@@ -58,10 +59,6 @@ app.on("activate", function () {
 //     } 
 // })
 
-ipcMain.handle("init-db", async function(event, arg) {
-    return api.initDB(arg);
-});     
-
 // ipcMain.handle('create-tenant', async(event, tenant) => {
 //     return api.createTenant(tenant);
 // });
@@ -82,11 +79,24 @@ ipcMain.handle("init-db", async function(event, arg) {
 //     return api.person.findByName(firstname, lastname)
 // })
 
+ipcMain.handle('test', async() => {
+    /** 
+    If (sls) {
+        fetch(.../test)
+    } else {
+        return api.utils.testDBConnection();
+    }
+    **/
+    return api.utils.testDBConnection();
+});     
+
+ipcMain.handle('env', async() => isServerless);
+
 ipcMain.handle('person/fetchAll', async() => {
     return api.person.fetchAll();
 })
 
-ipcMain.handle('person/create', async(_, person) => {
+ipcMain.handle('person/create', async(_,  person) => {
     return api.person.create(person);
 })
 
