@@ -63,7 +63,12 @@ const generateHandlers = () => {
     
     if (!fs.existsSync(indexPath)) return {};
     
-    let routes = JSON.parse(fs.readFileSync(indexPath)).routes;
+    type IRoute = {
+        entity: string;
+        action: string;
+    }
+
+    let routes: IRoute[] = JSON.parse(fs.readFileSync(indexPath)).routes;
 
     return routes.forEach(route => {
         return ipcMain.handle(`${route.entity}/${route.action}`, async(_, ...args) => {
