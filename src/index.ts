@@ -1,13 +1,19 @@
 import { app, ipcMain } from "electron";
 import { createCapacitorElectronApp } from "@capacitor-community/electron";
 
-import api from './api';
-
 const path = require('path');
 const fs = require('fs');
 
+const isServerless = !!+process.env.IS_SLS
 
-// const isServerless = !!+process.env.IS_SLS
+let api;
+
+// TODO Handle SLS
+if (isServerless) {
+    api = undefined;
+} else {    
+    api = require('./api').default;
+}
 
 // Enable contextIsolation for security, the API will be exposed through the preloader script
 // See https://www.electronjs.org/docs/tutorial/context-isolation
@@ -70,7 +76,7 @@ const generateHandlers = () => {
 
     let routes: IRoute[] = JSON.parse(fs.readFileSync(indexPath)).routes;
 
-    return routes.forEach(route => {
+    return routes.forEach(route => {    
         return ipcMain.handle(`${route.entity}/${route.action}`, async(_, ...args) => {
             return api[route.entity][route.action](...args)
         })
