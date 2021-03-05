@@ -4,16 +4,7 @@ import { createCapacitorElectronApp } from "@capacitor-community/electron";
 const path = require('path');
 const fs = require('fs');
 
-const isServerless = !!+process.env.IS_SLS
-
-let api;
-
-// TODO Handle SLS
-if (isServerless) {
-    api = undefined;
-} else {    
-    api = require('./api').default;
-}
+const api = require('./api').default;
 
 // Enable contextIsolation for security, the API will be exposed through the preloader script
 // See https://www.electronjs.org/docs/tutorial/context-isolation
@@ -53,18 +44,7 @@ app.on("activate", function () {
 });
 
 // Define any IPC or other custom functionality below here
-ipcMain.handle('test', async() => {
-    /** 
-    If (sls) {
-        fetch(.../test)
-    } else {
-        return api.utils.testDBConnection();
-    }
-    **/
-    return api.utils.testDBConnection();
-});     
-
-const generateHandlers = () => {
+const generateIPCHandlers = () => {
     const indexPath = path.resolve(__dirname, '../src/api/index.json');
     
     if (!fs.existsSync(indexPath)) return {};
@@ -83,4 +63,4 @@ const generateHandlers = () => {
     })
 }
 
-generateHandlers()
+generateIPCHandlers()
