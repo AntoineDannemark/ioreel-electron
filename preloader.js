@@ -4,7 +4,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 const path = require('path');
 const fs = require('fs');
 
-const generateApi = () => {
+const generatePreloaderApi = () => {
     const indexPath = (path.resolve(__dirname, 'src/api/index.json'))
     
     if (!fs.existsSync(indexPath)) return {};
@@ -24,9 +24,6 @@ const generateApi = () => {
 contextBridge.exposeInMainWorld(
     'api',
     {
-        utils: {
-            testDBConnection: options => ipcRenderer.invoke('test', options),        
-        },
-        ...generateApi()
+        ...generatePreloaderApi()
     }
 )
