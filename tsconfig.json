@@ -1,6 +1,6 @@
 {
   "compileOnSave": true,
-  "include": ["./src/*", "./src/api/*"],
+  "include": ["./src/*", "./src/api/*", "./src/storage/*"],
   "compilerOptions": {
     "outDir": "./build",
     "importHelpers": true,

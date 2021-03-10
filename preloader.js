@@ -22,6 +22,15 @@ const generatePreloaderApi = () => {
 }
 
 contextBridge.exposeInMainWorld(
+    'storageApi',
+    {
+        getEndpoint: () => ipcRenderer.invoke('storage/getEndpoint'),
+        setEndpoint: endpoint => ipcRenderer.invoke('storage/setEndpoint', endpoint),
+    }
+)
+
+
+contextBridge.exposeInMainWorld(
     'api',
     {
         ...generatePreloaderApi()

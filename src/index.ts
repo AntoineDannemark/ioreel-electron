@@ -4,7 +4,10 @@ import { createCapacitorElectronApp } from "@capacitor-community/electron";
 const path = require('path');
 const fs = require('fs');
 
-const api = require('./api').default;
+// const api = require('./api').default;
+const storageApi = require('./storage').default;
+
+let api;
 
 // Enable contextIsolation for security, the API will be exposed through the preloader script
 // See https://www.electronjs.org/docs/tutorial/context-isolation
@@ -44,7 +47,21 @@ app.on("activate", function () {
 });
 
 // Define any IPC or other custom functionality below here
+ipcMain.handle('storage/getEndpoint', () => {
+    return storageApi.getEndpoint(true);
+});
+
+ipcMain.handle('storage/setEndpoint', (_, endpoint) => {
+    const res = storageApi.setEndpoint(endpoint, true);
+    
+    api = require('./api').default;
+    
+    return res;
+});
+
 const generateIPCHandlers = () => {
+    if (!api) return null;
+    
     const indexPath = path.resolve(__dirname, '../src/api/index.json');
     
     if (!fs.existsSync(indexPath)) return {};
