@@ -1,10 +1,10 @@
 import { app, ipcMain } from "electron";
 import { createCapacitorElectronApp } from "@capacitor-community/electron";
+import log from 'electron-log';
 
 const path = require('path');
 const fs = require('fs');
 
-// const api = require('./api').default;
 const storageApi = require('./storage').default;
 
 let api;
@@ -47,17 +47,50 @@ app.on("activate", function () {
 });
 
 // Define any IPC or other custom functionality below here
-ipcMain.handle('storage/getEndpoint', () => {
-    return storageApi.getEndpoint(true);
-});
+ipcMain.handle('storage/getEndpoint', (_, isElectron) => {
+    const res = storageApi.getEndpoint(isElectron);
 
-ipcMain.handle('storage/setEndpoint', (_, endpoint) => {
-    const res = storageApi.setEndpoint(endpoint, true);
-    
-    api = require('./api').default;
-    
+    if (res && !api) {
+        api = require('./api').default;
+        generateIPCHandlers();
+    }
+
     return res;
 });
+
+ipcMain.handle('storage/setEndpoint', (_, {endpoint, isElectron}) => {
+    const res = storageApi.setEndpoint(endpoint, isElectron);
+    
+    if (res && !api) {
+        api = require('./api').default;
+        generateIPCHandlers();
+    }
+
+    return res;
+});
+
+ipcMain.handle('storage/clearEndpoint', (_, isElectron) => {
+    const res = storageApi.clearEndpoint(isElectron);
+
+    api = undefined;
+
+    const indexPath = path.resolve(__dirname, '../src/api/index.json');
+    
+    type IRoute = {
+        entity: string;
+        action: string;
+    }
+
+    let routes: IRoute[] = JSON.parse(fs.readFileSync(indexPath)).routes;
+
+    routes.forEach(route => {
+        ipcMain.removeHandler(`${route.entity}/${route.action}`)
+        log.info(`removed handler for ${route.entity}/${route.action}`)
+    });
+
+    return res;
+});
+
 
 const generateIPCHandlers = () => {
     if (!api) return null;
@@ -73,11 +106,10 @@ const generateIPCHandlers = () => {
 
     let routes: IRoute[] = JSON.parse(fs.readFileSync(indexPath)).routes;
 
-    return routes.forEach(route => {    
+    return routes.forEach(route => {   
+        log.info(`${route.entity}/${route.action}`);
         return ipcMain.handle(`${route.entity}/${route.action}`, async(_, ...args) => {
             return api[route.entity][route.action](...args)
         })
     })
 }
-
-generateIPCHandlers()

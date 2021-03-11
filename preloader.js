@@ -1,5 +1,5 @@
 require('./node_modules/@capacitor-community/electron/dist/electron-bridge.js');
-const { contextBridge, ipcRenderer } = require('electron') 
+const { contextBridge, ipcRenderer } = require('electron');
 
 const path = require('path');
 const fs = require('fs');
@@ -24,8 +24,9 @@ const generatePreloaderApi = () => {
 contextBridge.exposeInMainWorld(
     'storageApi',
     {
-        getEndpoint: () => ipcRenderer.invoke('storage/getEndpoint'),
-        setEndpoint: endpoint => ipcRenderer.invoke('storage/setEndpoint', endpoint),
+        getEndpoint: isElectron => ipcRenderer.invoke('storage/getEndpoint', isElectron),
+        setEndpoint: (endpoint, isElectron) => ipcRenderer.invoke('storage/setEndpoint', {endpoint, isElectron}),
+        clearEndpoint: isElectron => ipcRenderer.invoke('storage/clearEndpoint', isElectron),
     }
 )
 
