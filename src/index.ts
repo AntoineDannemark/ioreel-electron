@@ -48,10 +48,11 @@ app.on("activate", function () {
 
 // Define any IPC or other custom functionality below here
 ipcMain.handle('storage/getEndpoint', (_, isElectron) => {
+    log.info(process.versions)
     const res = storageApi.getEndpoint(isElectron);
 
     if (res && !api) {
-        api = require('./api').default;
+        api = require('./api').getApi(res);
         generateIPCHandlers();
     }
 
@@ -61,8 +62,11 @@ ipcMain.handle('storage/getEndpoint', (_, isElectron) => {
 ipcMain.handle('storage/setEndpoint', (_, {endpoint, isElectron}) => {
     const res = storageApi.setEndpoint(endpoint, isElectron);
     
+    log.info("SET ENDPOINT")
+    log.info(res, api)
     if (res && !api) {
-        api = require('./api').default;
+        log.info("RE-ASSIGN API")
+        api = require('./api').getApi(endpoint);
         generateIPCHandlers();
     }
 
